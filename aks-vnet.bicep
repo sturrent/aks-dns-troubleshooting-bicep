@@ -11,6 +11,9 @@ resource vnet 'Microsoft.Network/virtualNetworks@2020-06-01' = {
       addressPrefixes: vvnetPreffix
     }
     subnets: subnets
+    dhcpOptions: {
+      dnsServers: [ '168.63.129.16', '1.1.1.1', '8.8.8.8' ]
+    }
   }
 }
 
