@@ -81,3 +81,14 @@ module roleAuthorization 'aks-auth.bicep' = {
       roleDefinition: contributorRoleId
   }
 }
+
+module kubernetes './dns-monitor.bicep' = {
+  name: 'buildbicep-deploy'
+  scope: clusterrg
+  dependsOn: [
+    akscluster
+  ]
+  params: {
+    kubeConfig: akscluster.outputs.kubeConfig
+  }
+}
