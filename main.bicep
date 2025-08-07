@@ -1,6 +1,6 @@
 targetScope = 'subscription'
 
-param location string = 'southcentralus'
+param location string = 'canadacentral'
 param resourcePrefix string = 'aks-dns-ex1'
 param zoneName string = 'contoso.com'
 param recordName string = 'db'
@@ -48,9 +48,6 @@ module aksvnet './aks-vnet.bicep' = {
 module privatednszone './private-dns-zone.bicep' = {
   name: 'private-dns-zone'
   scope: vnetrg
-  dependsOn: [
-    aksvnet
-  ]
   params: {
     privateDnsZoneName: zoneName
     recordName: recordName
@@ -62,7 +59,7 @@ module privatednszone './private-dns-zone.bicep' = {
 module akscluster './aks-cluster.bicep' = {
   name: resourcePrefix
   scope: clusterrg
-  dependsOn: [ aksvnet, privatednszone ]
+  dependsOn: [ privatednszone ]
   params: {
     location: location
     clusterName: resourcePrefix
@@ -73,9 +70,6 @@ module akscluster './aks-cluster.bicep' = {
 module roleAuthorization 'aks-auth.bicep' = {
   name: 'roleAuthorization'
   scope: vnetrg
-  dependsOn: [
-    akscluster
-  ]
   params: {
       principalId: akscluster.outputs.aks_principal_id
       roleDefinition: contributorRoleId
@@ -85,9 +79,6 @@ module roleAuthorization 'aks-auth.bicep' = {
 module kubernetes './dns-monitor.bicep' = {
   name: 'buildbicep-deploy'
   scope: clusterrg
-  dependsOn: [
-    akscluster
-  ]
   params: {
     kubeConfig: akscluster.outputs.kubeConfig
   }
